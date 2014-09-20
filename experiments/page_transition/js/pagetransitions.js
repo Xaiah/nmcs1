@@ -131,20 +131,14 @@ var PageTransitions = (function() {
     }
     
     function gotoPage( targetPg ) {
-
 		if( isAnimating ) {
 			return false;
 		}
-
 		isAnimating = true;
-		
 		var $currPage = $pages.eq( current );
-
         current = targetPg;
-
 		var $nextPage = $pages.eq( current ).addClass( 'pt-page-current' ),
 			outClass = 'pt-page-moveToRight', inClass = 'pt-page-moveFromLeft';
-
 		$currPage.addClass( outClass ).on( animEndEventName, function() {
 			$currPage.off( animEndEventName );
 			endCurrPage = true;
@@ -152,7 +146,6 @@ var PageTransitions = (function() {
 				onEndAnimation( $currPage, $nextPage );
 			}
 		} );
-
 		$nextPage.addClass( inClass ).on( animEndEventName, function() {
 			$nextPage.off( animEndEventName );
 			endNextPage = true;
@@ -160,7 +153,6 @@ var PageTransitions = (function() {
 				onEndAnimation( $currPage, $nextPage );
 			}
 		} );
-
 		if( !support ) {
 			onEndAnimation( $currPage, $nextPage );
 		}
