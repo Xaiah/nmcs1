@@ -7,7 +7,7 @@ var PageTransitions = (function() {
 		$btn = $( '#nextPageBtn' ),
 		animcursor = 1,
 		pagesCount = $pages.length,
-		current = 0,
+		currentId = 0,
 		isAnimating = false,
 		endCurrPage = false,
 		endNextPage = false,
@@ -29,7 +29,7 @@ var PageTransitions = (function() {
 			$page.data( 'originalClassList', $page.attr( 'class' ) );
 		} );
 
-		$pages.eq( current ).addClass( 'pt-page-current' );
+		$pages.eq( currentId ).addClass( 'pt-page-current' );
 
 		$btn.on( 'click', function() {
 			if( isAnimating ) {
@@ -38,6 +38,7 @@ var PageTransitions = (function() {
             nextPage( 1 );
 		} );
         
+        // On change history state:
         window.onpopstate = function(event){
             var pState = event.state;
             console.log(pState);
@@ -58,16 +59,16 @@ var PageTransitions = (function() {
 
 		isAnimating = true;
 		
-		var $currPage = $pages.eq( current );
+		var $currPage = $pages.eq( currentId );
 
-        if( current < pagesCount - 1 ) {
-            ++current;
+        if( currentId < pagesCount - 1 ) {
+            ++currentId;
         }
         else {
-            current = 0; // back to main
+            currentId = 0; // back to main
         }
 
-		var $nextPage = $pages.eq( current ).addClass( 'pt-page-current' ),
+		var $nextPage = $pages.eq( currentId ).addClass( 'pt-page-current' ),
 			outClass = 'pt-page-moveToLeft', inClass = 'pt-page-moveFromRight';
         
         /*
@@ -127,7 +128,7 @@ var PageTransitions = (function() {
         //  - Use it to change the content on the page
         // - a title, which doesn't have any functionality atm
         // - additions to the url
-        history.pushState({id: current}, "", "?state=" + current);
+        history.pushState({id: currentId}, "", "?state=" + currentId);
     }
     
     function gotoPage( targetPg ) {
@@ -135,10 +136,20 @@ var PageTransitions = (function() {
 			return false;
 		}
 		isAnimating = true;
-		var $currPage = $pages.eq( current );
-        current = targetPg;
-		var $nextPage = $pages.eq( current ).addClass( 'pt-page-current' ),
-			outClass = 'pt-page-moveToRight', inClass = 'pt-page-moveFromLeft';
+        
+        var outClass, inClass;
+        if (currentId > targetPg) {
+            // Transit backward: toward left
+            outClass = 'pt-page-moveToRight';
+            inClass = 'pt-page-moveFromLeft';
+        } else {
+            outClass = 'pt-page-moveToLeft';
+            inClass = 'pt-page-moveFromRight';
+        }
+        currentId = targetPg;
+        
+		var $currPage = $pages.eq( currentId );
+		var $nextPage = $pages.eq( currentId ).addClass( 'pt-page-current' );
 		$currPage.addClass( outClass ).on( animEndEventName, function() {
 			$currPage.off( animEndEventName );
 			endCurrPage = true;
@@ -164,6 +175,7 @@ var PageTransitions = (function() {
 	return { 
 		init : init,
 		nextPage : nextPage,
+        gotoPage : gotoPage,
 	};
 
 })();
