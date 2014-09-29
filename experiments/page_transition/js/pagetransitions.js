@@ -140,17 +140,21 @@ var PageTransitions = (function() {
         var outClass, inClass;
         if (currentId > targetPg) {
             // Transit backward: toward left
+            console.log("Transit backward: toward left");
             outClass = 'pt-page-moveToRight';
             inClass = 'pt-page-moveFromLeft';
         } else {
+            // Transit forward: toward right
+            console.log("Transit forward: toward right");
             outClass = 'pt-page-moveToLeft';
             inClass = 'pt-page-moveFromRight';
         }
-        currentId = targetPg;
         
-		var $currPage = $pages.eq( currentId );
+        var $currPage = $pages.eq( currentId );
+        currentId = targetPg;
 		var $nextPage = $pages.eq( currentId ).addClass( 'pt-page-current' );
-		$currPage.addClass( outClass ).on( animEndEventName, function() {
+        
+        $currPage.addClass( outClass ).on( animEndEventName, function() {
 			$currPage.off( animEndEventName );
 			endCurrPage = true;
 			if( endNextPage ) {
